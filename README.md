@@ -1,7 +1,8 @@
-# Implementing Efficient and Reliable Producers with the Amazon Kinesis Producer Library
+Kinesis Producer implementation 
 
 ## Overview
 
+This producer pushes IoT sensor data to Kinesis streams
 
 [Maven](https://maven.apache.org/) is used for building and dependency management.
 
