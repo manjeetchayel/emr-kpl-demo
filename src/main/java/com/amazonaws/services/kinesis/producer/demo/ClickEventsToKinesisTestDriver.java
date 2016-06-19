@@ -13,17 +13,30 @@ import java.util.concurrent.Executors;
 import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.lang.StringUtils;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
 public class ClickEventsToKinesisTestDriver {
     private static Random RANDOM = new Random();
 
     private static final Duration TEST_DURATION = Duration.ofSeconds(7200);
+    private static int BASE_TEMP = 70;
+
+    private static int genRandomInt(int min, int max) {
+        return RANDOM.nextInt((max - min) + 1) + min;
+    }
 
     private static ClickEvent generateClickEvent() {
         byte[] id = new byte[13];
         RANDOM.nextBytes(id);
-        String data = StringUtils.repeat("a", 350);
-        return new ClickEvent(DatatypeConverter.printBase64Binary(id), data);
+    
+       BASE_TEMP = BASE_TEMP + genRandomInt(-1,1);
+        String data = "" + genRandomInt(1,1000) + "," + // Device ID
+                 genRandomInt(55,90) + "," +
+                         new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+    
+
+	return new ClickEvent(DatatypeConverter.printBase64Binary(id), data);
     }
 
     public static void main(String[] args) throws Exception {
@@ -31,7 +44,7 @@ public class ClickEventsToKinesisTestDriver {
         final ExecutorService exec = Executors.newCachedThreadPool();
 
         // Change this line to use a different implementation
-        final AbstractClickEventsToKinesis worker = new MultithreadedClickEventsToKinesis(events);
+        final AbstractClickEventsToKinesis worker = new BasicClickEventsToKinesis(events);
         exec.submit(worker);
 
         // Warm up the KinesisProducer instance
